@@ -1,0 +1,21 @@
+.asks {
+    min-height: 120px;
+}
+.ask {
+    min-height: 24px;
+    position: relative;
+
+    .orderbook-amount {
+        position: initial;
+
+        .volume-bar {
+            background-color: rgba(255, 111, 117, 0.3);
+            background-position: 50% center;
+            position: absolute;
+            height: 16px;
+            top: 5px;
+            left: -1px;
+            z-index: 1;
+        }
+    }
+}

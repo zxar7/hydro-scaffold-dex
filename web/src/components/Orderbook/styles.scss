@@ -1,15 +1,12 @@
 .orderbook {
-    .header,
-    .status {
+    .header {
         height: 40px;
         line-height: 40px;
     }
-    .asks,
-    .bids {
-        min-height: 120px;
+    .flod-header {
+        justify-content: start;
     }
-    .ask,
-    .bid {
-        min-height: 24px;
+    .orderbook-tab {
+        flex: 15;
     }
 }

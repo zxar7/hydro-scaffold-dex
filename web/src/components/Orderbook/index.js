@@ -1,12 +1,55 @@
 import React from 'react';
 import { connect } from 'react-redux';
+
+import Asks from '../Asks';
+import Bids from '../Bids';
+import Fold from '../Fold';
+import RealTimeStatus from '../RealTimeStatus';
+
 import './styles.scss';
+
+const TabHeader = () => {
+  return (
+    <div className="flex header text-secondary">
+      <div className="col-4 text-center">Amount</div>
+      <div className="col-4 text-center">Price</div>
+      <div className="col-4 text-center">Total</div>
+    </div>
+  )
+}
+
+const AllTab = () => {
+  return (
+    <div className="flex-column flex-1">
+      <Asks limit={10} />
+      <RealTimeStatus />
+      <Bids limit={10} />
+    </div>
+  )
+}
+const BuyTab = () => {
+  return (
+    <div className="flex-column flex-1">
+      <Asks />
+      <RealTimeStatus />
+    </div>
+  )
+}
+const SellTab = () => {
+  return (
+    <div className="flex-column flex-1">
+      <RealTimeStatus />
+      <Bids />
+    </div>
+  )
+}
 
 class OrderBook extends React.Component {
   constructor(props) {
     super(props);
     this.lastUpdatedAt = null;
     this.forceRenderTimer = null;
+    this.tabs = { 'ALL': <AllTab />, 'BUY': <BuyTab />, 'SELL': <SellTab /> };
   }
 
   // max 1 render in 1 second
@@ -38,58 +81,17 @@ class OrderBook extends React.Component {
   }
 
   render() {
-    let { bids, asks, websocketConnected, currentMarket } = this.props;
-
     return (
       <div className="orderbook flex-column flex-1">
-        <div className="flex header text-secondary">
-          <div className="col-6 text-right">Amount</div>
-          <div className="col-6 text-right">Price</div>
-        </div>
-        <div className="flex-column flex-1">
-          <div className="asks flex-column flex-column-reverse flex-1 overflow-hidden">
-            {asks
-              .slice(-20)
-              .reverse()
-              .toArray()
-              .map(([price, amount]) => {
-                return (
-                  <div className="ask flex align-items-center" key={price.toString()}>
-                    <div className="col-6 orderbook-amount text-right">
-                      {amount.toFixed(currentMarket.amountDecimals)}
-                    </div>
-                    <div className="col-6 text-danger text-right">{price.toFixed(currentMarket.priceDecimals)}</div>
-                  </div>
-                );
-              })}
-          </div>
-          <div className="status border-top border-bottom">
-            {websocketConnected ? (
-              <div className="col-6 text-success">
-                <i className="fa fa-circle" aria-hidden="true" /> RealTime
-              </div>
-            ) : (
-              <div className="col-6 text-danger">
-                <i className="fa fa-circle" aria-hidden="true" /> Disconnected
-              </div>
-            )}
-          </div>
-          <div className="bids flex-column flex-1 overflow-hidden">
-            {bids
-              .slice(0, 20)
-              .toArray()
-              .map(([price, amount]) => {
-                return (
-                  <div className="bid flex align-items-center" key={price.toString()}>
-                    <div className="col-6 orderbook-amount text-right">
-                      {amount.toFixed(currentMarket.amountDecimals)}
-                    </div>
-                    <div className="col-6 text-success text-right">{price.toFixed(currentMarket.priceDecimals)}</div>
-                  </div>
-                );
-              })}
-          </div>
-        </div>
+        <Fold className="border-top flex-1 flex-column">
+          {Object.keys(this.tabs).map(tab => {
+            return (
+              <div key={tab} className="orderbook-tab" data-fold-item-title={tab}>
+                <TabHeader />
+                {this.tabs[tab]}
+              </div>)
+          })}
+        </Fold>
       </div>
     );
   }
@@ -97,11 +99,7 @@ class OrderBook extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    asks: state.market.getIn(['orderbook', 'asks']),
-    bids: state.market.getIn(['orderbook', 'bids']),
     loading: false,
-    currentMarket: state.market.getIn(['markets', 'currentMarket']),
-    websocketConnected: state.config.get('websocketConnected'),
     theme: state.config.get('theme')
   };
 };
