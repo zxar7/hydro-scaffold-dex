@@ -20,21 +20,26 @@ const Bids = (props) => {
         item.width = (Number(item.amount) / totalAmount) * 100;
     });
 
-    const emptyRows = new Array(Math.abs(limit - actualBidValues.length)).fill(
-        <div className="bid flex align-items-center">
-            <div className="col-4 orderbook-amount text-center">-</div>
-            <div className="col-4 text-success text-center">-</div>
-            <div className="col-4 text-center">-</div>
-        </div>
-    );
+    const emptyRows = [];
+    for (let i = 0; i < Math.abs(limit - actualBidValues.length); i++) {
+        const oddRow = (actualBidValues.length + i) % 2 ? '' : 'oddRow';
+        emptyRows.push(
+            <div key={`emptyRow${i}`} className={`bid flex align-items-center ${oddRow}`}>
+                <div className="col-4 orderbook-amount text-center">-</div>
+                <div className="col-4 text-success text-center">-</div>
+                <div className="col-4 text-center">-</div>
+            </div>
+        )
+    }
 
     return (
         <div className="bids flex-column flex-1 ">
             {bidValueObjects
-                .map((bidRow) => {
+                .map((bidRow, i) => {
                     const { amount, price, width, total } = bidRow;
+                    const oddRow = i % 2 ? '' : 'oddRow';
                     return (
-                        <div className="bid flex align-items-center" key={price.toString()}>
+                        <div className={`bid flex align-items-center ${oddRow}`} key={price.toString()}>
                             <div className="col-4 orderbook-amount text-center">
                                 {amount}
                                 <span className='volume-bar' style={{ "width": `${width}%` }} />

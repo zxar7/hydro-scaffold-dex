@@ -4,7 +4,9 @@
 .ask {
     min-height: 24px;
     position: relative;
-
+    &.oddRow {
+        background-color: rgb(242, 244, 253);
+    }
     .orderbook-amount {
         position: initial;
 

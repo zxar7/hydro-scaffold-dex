@@ -20,21 +20,26 @@ const Asks = (props) => {
     item.width = (Number(item.amount) / totalAmount) * 100;
   });
 
-  const emptyRows = new Array(Math.abs(limit - actualAskValues.length)).fill(
-    <div className={`bid flex align-items-center`}>
-      <div className="col-4 orderbook-amount text-center">-</div>
-      <div className="col-4 text-danger text-center">-</div>
-      <div className="col-4 text-center">-</div>
-    </div>
-  );
+  const emptyRows = [];
+  for (let i = 0; i < Math.abs(limit - actualAskValues.length); i++) {
+    const oddRow = (actualAskValues.length + i) % 2 ? '' : 'oddRow';
+    emptyRows.push(
+      <div key={`emptyRow${i}`} className={`ask flex align-items-center ${oddRow}`}>
+        <div className="col-4 orderbook-amount text-center">-</div>
+        <div className="col-4 text-danger text-center">-</div>
+        <div className="col-4 text-center">-</div>
+      </div>
+    )
+  }
 
   return (
     <div className="asks flex-column flex-column-reverse flex-1">
       {askValueObjects
-        .map((askRow) => {
+        .map((askRow, i) => {
           const { width, amount, price, total } = askRow;
+          const oddRow = i % 2 ? '' : 'oddRow';
           return (
-            <div className="ask flex align-items-center" key={price.toString()}>
+            <div className={`ask flex align-items-center ${oddRow}`} key={price.toString()}>
               <div className="col-4 orderbook-amount text-center">
                 {amount}
                 <span className='volume-bar' style={{ width: `${width}%` }} />
